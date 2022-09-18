@@ -1,9 +1,8 @@
 use dotenv::dotenv;
 use std::env;
-use serde::Deserialize;
-use serde_derive::Deserialize;
-use serde_derive::Serialize;
+use serde_derive::{Serialize, Deserialize};
 use reqwest::Error;
+use chrono::{NaiveDate, NaiveDateTime};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
