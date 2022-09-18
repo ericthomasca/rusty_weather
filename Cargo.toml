@@ -2,9 +2,12 @@
 name = "weather_cli_rust"
 version = "0.1.0"
 edition = "2021"
+authors = ["Eric Thomas"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde_json = "1.0"
+serde = "1.0.144"
 dotenv = "0.15.0"
+reqwest = "0.11.11"
+serde_derive = "1.0.144"

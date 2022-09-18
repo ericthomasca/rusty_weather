@@ -1,0 +1,46 @@
+{
+    "coord": {
+        "lon": -86.9422,
+        "lat": 33.8004
+    },
+    "weather": [
+        {
+            "id": 800,
+            "main": "Clear",
+            "description": "clear sky",
+            "icon": "01d"
+        }
+    ],
+    "base": "stations",
+    "main": {
+        "temp": 301.9,
+        "feels_like": 304.06,
+        "temp_min": 300.26,
+        "temp_max": 303.64,
+        "pressure": 1019,
+        "humidity": 62,
+        "sea_level": 1019,
+        "grnd_level": 994
+    },
+    "visibility": 10000,
+    "wind": {
+        "speed": 0.43,
+        "deg": 90,
+        "gust": 0.68
+    },
+    "clouds": {
+        "all": 9
+    },
+    "dt": 1663524540,
+    "sys": {
+        "type": 2,
+        "id": 19320,
+        "country": "US",
+        "sunrise": 1663500790,
+        "sunset": 1663545047
+    },
+    "timezone": -18000,
+    "id": 4063765,
+    "name": "Corner",
+    "cod": 200
+}
