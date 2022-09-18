@@ -1,0 +1,11 @@
+===================
+== Rusty Weather ==
+===================
+
+Weather for Corner Brook, NL (48.962395, -57.927313)
+Last Updated: 2022-09-17 23:28:22
+
+24C (Feels like 26C) Mostly Cloudy
+High: 27C   Low: 17C
+Wind: 17km/h SSW
+Sunrise: 07:04   Sunset: 18:33 
