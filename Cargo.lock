@@ -720,6 +720,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ef03e0a2b150c7a90d01faf6254c9c48a41e95fb2a8c2ac1c6f0d2b9aefc342"
 
 [[package]]
+name = "rusty_weather"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dotenv",
+ "exitfailure",
+ "reqwest",
+ "serde",
+ "serde_derive",
+ "tokio",
+]
+
+[[package]]
 name = "ryu"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -840,9 +853,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.99"
+version = "1.0.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58dbef6ec655055e20b86b15a8cc6d439cca19b667537ac6a1369572d151ab13"
+checksum = "52205623b1b0f064a4e71182c3b18ae902267282930c6d5462c91b859668426e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1120,19 +1133,6 @@ name = "wasm-bindgen-shared"
 version = "0.2.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c38c045535d93ec4f0b4defec448e4291638ee608530863b1e2ba115d4fff7f"
-
-[[package]]
-name = "weather_cli_rust"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dotenv",
- "exitfailure",
- "reqwest",
- "serde",
- "serde_derive",
- "tokio",
-]
 
 [[package]]
 name = "web-sys"
