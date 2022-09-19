@@ -1,4 +1,4 @@
-# weather_cli_rust
+# Rusty Weather
 
 A CLI weather app written is Rust.
 
