@@ -21,9 +21,9 @@ async fn main() -> Result<(), ExitFailure> {
 
     let res = weather_data::Root::get(&api_key, &zip, &country).await?;
 
-    println!("=========================");
-    println!("====  Rusty Weather  ====");
-    println!("=========================");
+    println!("=================================");
+    println!("========  Rusty Weather  ========");
+    println!("=================================");
     println!();
 
     let city = res.name;
