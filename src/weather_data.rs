@@ -81,8 +81,8 @@ pub struct Sys {
 }
 
 impl Root {
-    pub async fn get(api_key: &str, city: &str) -> Result<Self, ExitFailure> {
-        let url = format!("https://api.openweathermap.org/data/2.5/weather?appid={}&q={}", api_key, city);
+    pub async fn get(api_key: &str, zip: &str, country: &str) -> Result<Self, ExitFailure> {
+        let url = format!("https://api.openweathermap.org/data/2.5/weather?appid={}&zip={},{}", api_key, zip, country);
         let url = Url::parse(&*url)?;
         let res = reqwest::get(url).await?
             .json::<Root>().await?;

@@ -3,10 +3,10 @@ mod weather_data;
 use dotenv::dotenv;
 use std::env;
 use exitfailure::ExitFailure;
-use chrono::{NaiveDate, NaiveDateTime, DateTime, Utc};
-use std::time::{SystemTime, UNIX_EPOCH, Duration};
+use chrono::{NaiveDateTime, DateTime, Utc};
 
 const KELVIN_ZERO: f64 = -273.15;
+const MPS_TO_KMPH: f64 = 3.6;
 
 
 #[tokio::main]
@@ -14,25 +14,23 @@ async fn main() -> Result<(), ExitFailure> {
     dotenv().ok();
 
     let api_key = &env::var("OPEN_WEATHER_MAP_API").unwrap() as &str;
-    let city = "toronto";
-    let res = weather_data::Root::get(&api_key, &city).await?;
+    let zip = "A2H";
+    let country = "CA";
+    let res = weather_data::Root::get(&api_key, &zip, &country).await?;
 
-    println!("=====================");
-    println!("==  Rusty Weather  ==");
-    println!("=====================");
+    println!("=========================");
+    println!("====  Rusty Weather  ====");
+    println!("=========================");
     println!();
 
     let city = res.name;
     let lat = res.coord.lat;
     let lon = res.coord.lon;
 
-    let updated_timestamp = res.dt;
-    let updated_naive = NaiveDateTime::from_timestamp(updated_timestamp, 0);
-    let updated_datetime = DateTime::<Utc>::from_utc(updated_naive, Utc);
-    let updated_timestamp_str = updated_datetime.format("%Y-%m-%d %H:%M:%S").to_string();
+    let updated_timestamp = timestamp_to_datetime_str(res.dt);
     
     println!("Weather for {} ({}, {})", city, lat, lon);
-    println!("Last Updated: {}", updated_timestamp_str);
+    println!("Last Updated: {}", updated_timestamp);
     println!();
     
     let temperature = (res.main.temp + KELVIN_ZERO).round() as i32;
@@ -46,22 +44,15 @@ async fn main() -> Result<(), ExitFailure> {
 
     println!("High: {}C  Low: {}C", temp_high, temp_low);
 
-    let wind_speed = (res.wind.speed * 3.6).round();
+    let wind_speed = (res.wind.speed * MPS_TO_KMPH).round();
     let wind_dir = deg_to_cardinal(res.wind.deg);
 
     println!("Wind: {}km/h {}", wind_speed, wind_dir);
 
-    let sunrise_timestamp = res.sys.sunrise;
-    let sunrise_naive = NaiveDateTime::from_timestamp(sunrise_timestamp, 0);
-    let sunrise_datetime = DateTime::<Utc>::from_utc(sunrise_naive, Utc);
-    let sunrise_timestamp_str = sunrise_datetime.format("%H:%M:%S").to_string();
+    let sunrise_timestamp = timestamp_to_time_str(res.sys.sunrise);
+    let sunset_timestamp = timestamp_to_time_str(res.sys.sunset);
 
-    let sunset_timestamp = res.sys.sunset;
-    let sunset_naive = NaiveDateTime::from_timestamp(sunset_timestamp, 0);
-    let sunset_datetime = DateTime::<Utc>::from_utc(sunset_naive, Utc);
-    let sunset_timestamp_str = sunset_datetime.format("%H:%M:%S").to_string();
-
-    println!("Sunrise: {}  Sunset: {}", sunrise_timestamp_str, sunset_timestamp_str);    
+    println!("Sunrise: {}  Sunset: {}", sunrise_timestamp, sunset_timestamp);    
 
     Ok(())
 
@@ -78,4 +69,18 @@ fn deg_to_cardinal(deg: i64) -> String {
     let cardinal = dirs[dir_index];
     cardinal.to_owned()
 
+}
+
+fn timestamp_to_time_str(timestamp: i64) -> String {
+    let naive = NaiveDateTime::from_timestamp(timestamp, 0);
+    let datetime = DateTime::<Utc>::from_utc(naive, Utc);
+    let timestamp_str = datetime.format("%H:%M:%S").to_string();
+    timestamp_str
+}
+
+fn timestamp_to_datetime_str(timestamp: i64) -> String {
+    let naive = NaiveDateTime::from_timestamp(timestamp, 0);
+    let datetime = DateTime::<Utc>::from_utc(naive, Utc);
+    let timestamp_str = datetime.format("%Y-%m-%d %H:%M:%S").to_string();
+    timestamp_str
 }
