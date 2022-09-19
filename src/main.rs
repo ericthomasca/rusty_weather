@@ -14,8 +14,11 @@ async fn main() -> Result<(), ExitFailure> {
     dotenv().ok();
 
     let api_key = &env::var("OPEN_WEATHER_MAP_API").unwrap() as &str;
-    let zip = "A2H";
-    let country = "CA";
+    
+    let args: Vec<String> = env::args().collect();
+    let zip = &args[1].to_uppercase();
+    let country = &args[2].to_uppercase();
+
     let res = weather_data::Root::get(&api_key, &zip, &country).await?;
 
     println!("=========================");
