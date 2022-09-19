@@ -29,8 +29,9 @@ async fn main() -> Result<(), ExitFailure> {
     let city = res.name;
     let lat = res.coord.lat;
     let lon = res.coord.lon;
+    let timezone = res.timezone;
 
-    let updated_timestamp = timestamp_to_datetime_str(res.dt);
+    let updated_timestamp = timestamp_to_datetime_str(res.dt, timezone);
     
     println!("Weather for {} ({}, {})", city, lat, lon);
     println!("Last Updated: {}", updated_timestamp);
@@ -52,8 +53,8 @@ async fn main() -> Result<(), ExitFailure> {
 
     println!("Wind: {}km/h {}", wind_speed, wind_dir);
 
-    let sunrise_timestamp = timestamp_to_time_str(res.sys.sunrise);
-    let sunset_timestamp = timestamp_to_time_str(res.sys.sunset);
+    let sunrise_timestamp = timestamp_to_time_str(res.sys.sunrise, timezone);
+    let sunset_timestamp = timestamp_to_time_str(res.sys.sunset, timezone);
 
     println!("Sunrise: {}  Sunset: {}", sunrise_timestamp, sunset_timestamp);    
 
@@ -74,15 +75,15 @@ fn deg_to_cardinal(deg: i64) -> String {
 
 }
 
-fn timestamp_to_time_str(timestamp: i64) -> String {
-    let naive = NaiveDateTime::from_timestamp(timestamp, 0);
+fn timestamp_to_time_str(timestamp: i64, timezone: i64) -> String {
+    let naive = NaiveDateTime::from_timestamp(timestamp + timezone, 0);
     let datetime = DateTime::<Utc>::from_utc(naive, Utc);
     let timestamp_str = datetime.format("%H:%M:%S").to_string();
     timestamp_str
 }
 
-fn timestamp_to_datetime_str(timestamp: i64) -> String {
-    let naive = NaiveDateTime::from_timestamp(timestamp, 0);
+fn timestamp_to_datetime_str(timestamp: i64, timezone: i64) -> String {
+    let naive = NaiveDateTime::from_timestamp(timestamp + timezone, 0);
     let datetime = DateTime::<Utc>::from_utc(naive, Utc);
     let timestamp_str = datetime.format("%Y-%m-%d %H:%M:%S").to_string();
     timestamp_str
