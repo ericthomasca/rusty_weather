@@ -1,124 +1,81 @@
+mod weather_data;
+
 use dotenv::dotenv;
 use std::env;
-use serde_derive::{Serialize, Deserialize};
-use reqwest::Error;
-use chrono::{NaiveDate, NaiveDateTime};
+use exitfailure::ExitFailure;
+use chrono::{NaiveDate, NaiveDateTime, DateTime, Utc};
+use std::time::{SystemTime, UNIX_EPOCH, Duration};
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct WeatherData {
-    pub coord: Coord,
-    pub weather: Vec<Weather>,
-    pub base: String,
-    pub main: Main,
-    pub visibility: i64,
-    pub wind: Wind,
-    pub clouds: Clouds,
-    pub dt: i64,
-    pub sys: Sys,
-    pub timezone: i64,
-    pub id: i64,
-    pub name: String,
-    pub cod: i64,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Coord {
-    pub lon: f64,
-    pub lat: f64,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Weather {
-    pub id: i64,
-    pub main: String,
-    pub description: String,
-    pub icon: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Main {
-    pub temp: f64,
-    #[serde(rename = "feels_like")]
-    pub feels_like: f64,
-    #[serde(rename = "temp_min")]
-    pub temp_min: f64,
-    #[serde(rename = "temp_max")]
-    pub temp_max: f64,
-    pub pressure: i64,
-    pub humidity: i64,
-    #[serde(rename = "sea_level")]
-    pub sea_level: i64,
-    #[serde(rename = "grnd_level")]
-    pub grnd_level: i64,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Wind {
-    pub speed: f64,
-    pub deg: i64,
-    pub gust: f64,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Clouds {
-    pub all: i64,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Sys {
-    #[serde(rename = "type")]
-    pub type_field: i64,
-    pub id: i64,
-    pub country: String,
-    pub sunrise: i64,
-    pub sunset: i64,
-}
+const KELVIN_ZERO: f64 = -273.15;
 
 
-fn main() {
-    // Import .env file
+#[tokio::main]
+async fn main() -> Result<(), ExitFailure> {
     dotenv().ok();
 
-    // Create weather api url
-    let city_url_prefix = "https://api.openweathermap.org/data/2.5/weather?appid=";
-    let owm_api = &env::var("OPEN_WEATHER_MAP_API").unwrap() as &str;
-    let query_key = "&q=";
-    let city = "corner&20brook";
-    let weather_url = city_url_prefix.to_owned() + owm_api + query_key + city;
+    let api_key = &env::var("OPEN_WEATHER_MAP_API").unwrap() as &str;
+    let city = "toronto";
+    let res = weather_data::Root::get(&api_key, &city).await?;
 
-    println!("{}", weather_url); // to print the complete request url
+    println!("=====================");
+    println!("==  Rusty Weather  ==");
+    println!("=====================");
+    println!();
 
+    let city = res.name;
+    let lat = res.coord.lat;
+    let lon = res.coord.lon;
 
+    let updated_timestamp = res.dt;
+    let updated_naive = NaiveDateTime::from_timestamp(updated_timestamp, 0);
+    let updated_datetime = DateTime::<Utc>::from_utc(updated_naive, Utc);
+    let updated_timestamp_str = updated_datetime.format("%Y-%m-%d %H:%M:%S").to_string();
+    
+    println!("Weather for {} ({}, {})", city, lat, lon);
+    println!("Last Updated: {}", updated_timestamp_str);
+    println!();
+    
+    let temperature = (res.main.temp + KELVIN_ZERO).round() as i32;
+    let feels_like = (res.main.feels_like + KELVIN_ZERO).round() as i32;
+    let conditons = &res.weather[0].main;
+
+    println!("{}C (Feels like {}C) {}", temperature, feels_like, conditons);
+
+    let temp_high = (res.main.temp_max + KELVIN_ZERO).round() as i32;
+    let temp_low = (res.main.temp_min + KELVIN_ZERO). round() as i32;
+
+    println!("High: {}C  Low: {}C", temp_high, temp_low);
+
+    let wind_speed = (res.wind.speed * 3.6).round();
+    let wind_dir = deg_to_cardinal(res.wind.deg);
+
+    println!("Wind: {}km/h {}", wind_speed, wind_dir);
+
+    let sunrise_timestamp = res.sys.sunrise;
+    let sunrise_naive = NaiveDateTime::from_timestamp(sunrise_timestamp, 0);
+    let sunrise_datetime = DateTime::<Utc>::from_utc(sunrise_naive, Utc);
+    let sunrise_timestamp_str = sunrise_datetime.format("%H:%M:%S").to_string();
+
+    let sunset_timestamp = res.sys.sunset;
+    let sunset_naive = NaiveDateTime::from_timestamp(sunset_timestamp, 0);
+    let sunset_datetime = DateTime::<Utc>::from_utc(sunset_naive, Utc);
+    let sunset_timestamp_str = sunset_datetime.format("%H:%M:%S").to_string();
+
+    println!("Sunrise: {}  Sunset: {}", sunrise_timestamp_str, sunset_timestamp_str);    
+
+    Ok(())
 
 }
 
-fn timestamp_to_datetime(epoch: i32) -> i32 {
-    epoch
-}
 
-fn timestamp_to_time(epoch: i32) -> i32 {
-    epoch
-}
-
-fn kelvin_to_celcius(kelvin_temp: f64) -> i32 {
-    kelvin_temp as i32
-}
-
-fn deg_to_cardinal(deg: f64) -> f64 {
+fn deg_to_cardinal(deg: i64) -> String {
     let dirs = [
         "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", 
         "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW",
     ];
-    deg
-}
+    let ix = (((deg as f64) + 11.25) / 22.5).round() as i32;
+    let dir_index = (ix % 16) as usize;
+    let cardinal = dirs[dir_index];
+    cardinal.to_owned()
 
-fn mps_to_kmph(mps: f64) -> i32 {
-    mps as i32
 }
