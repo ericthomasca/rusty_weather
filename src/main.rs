@@ -19,42 +19,42 @@ async fn main() -> Result<(), ExitFailure> {
     let zip = &args[1].to_uppercase();
     let country = &args[2].to_uppercase();
 
-    let res = weather_data::Root::get(&api_key, &zip, &country).await?;
+    let data = weather_data::Root::get(&api_key, &zip, &country).await?;
 
     println!("=================================");
     println!("========  Rusty Weather  ========");
     println!("=================================");
     println!();
 
-    let city = res.name;
-    let lat = res.coord.lat;
-    let lon = res.coord.lon;
-    let timezone = res.timezone;
+    let city = data.name;
+    let lat = data.coord.lat;
+    let lon = data.coord.lon;
+    let timezone = data.timezone;
 
-    let updated_timestamp = timestamp_to_datetime_str(res.dt, timezone);
+    let updated_timestamp = timestamp_to_datetime_str(data.dt, timezone);
     
     println!("Weather for {} ({}, {})", city, lat, lon);
     println!("Last Updated: {}", updated_timestamp);
     println!();
     
-    let temperature = (res.main.temp + KELVIN_ZERO).round() as i32;
-    let feels_like = (res.main.feels_like + KELVIN_ZERO).round() as i32;
-    let conditons = &res.weather[0].main;
+    let temperature = (data.main.temp + KELVIN_ZERO).round() as i32;
+    let feels_like = (data.main.feels_like + KELVIN_ZERO).round() as i32;
+    let conditons = &data.weather[0].main;
 
     println!("{}C (Feels like {}C) {}", temperature, feels_like, conditons);
 
-    let temp_high = (res.main.temp_max + KELVIN_ZERO).round() as i32;
-    let temp_low = (res.main.temp_min + KELVIN_ZERO). round() as i32;
+    let temp_high = (data.main.temp_max + KELVIN_ZERO).round() as i32;
+    let temp_low = (data.main.temp_min + KELVIN_ZERO). round() as i32;
 
     println!("High: {}C  Low: {}C", temp_high, temp_low);
 
-    let wind_speed = (res.wind.speed * MPS_TO_KMPH).round();
-    let wind_dir = deg_to_cardinal(res.wind.deg);
+    let wind_speed = (data.wind.speed * MPS_TO_KMPH).round();
+    let wind_dir = deg_to_cardinal(data.wind.deg);
 
     println!("Wind: {}km/h {}", wind_speed, wind_dir);
 
-    let sunrise_timestamp = timestamp_to_time_str(res.sys.sunrise, timezone);
-    let sunset_timestamp = timestamp_to_time_str(res.sys.sunset, timezone);
+    let sunrise_timestamp = timestamp_to_time_str(data.sys.sunrise, timezone);
+    let sunset_timestamp = timestamp_to_time_str(data.sys.sunset, timezone);
 
     println!("Sunrise: {}  Sunset: {}", sunrise_timestamp, sunset_timestamp);    
 
