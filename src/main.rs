@@ -39,9 +39,9 @@ async fn main() -> Result<(), ExitFailure> {
     
     let temperature = (data.main.temp + KELVIN_ZERO).round() as i32;
     let feels_like = (data.main.feels_like + KELVIN_ZERO).round() as i32;
-    let conditons = &data.weather[0].main;
+    let conditions = &data.weather[0].main;
 
-    println!("{}C (Feels like {}C) {}", temperature, feels_like, conditons);
+    println!("{}C (Feels like {}C) {}", temperature, feels_like, conditions);
 
     let temp_high = (data.main.temp_max + KELVIN_ZERO).round() as i32;
     let temp_low = (data.main.temp_min + KELVIN_ZERO). round() as i32;
