@@ -5,17 +5,17 @@ A CLI weather app written is Rust.
 ## Usage
 
 ```bash
-git clone https://github.com/ericthomasca/weather_cli_rust.git
-cd weather_cli_rust
+git clone https://github.com/ericthomasca/rusty_weather.git
+cd rusty_weather
 cargo build
 cd target/debug
-./weather_cli_rust {postal code} {country code}
+./rusty_weather {postal code} {country code}
 ```
 
 ## Example
 
 ```console
-eric@term:~$ ./weather_cli_rust M5T CA
+eric@term:~$ ./rusty_weather M5T CA
 =================================
 ========  Rusty Weather  ========
 =================================
